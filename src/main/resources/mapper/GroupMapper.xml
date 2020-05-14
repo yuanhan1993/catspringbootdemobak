@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qsls9.catspringbootdemo.dao.GroupMapper">
+    <sql id="Base_Column_List">
+        id, group_id,group_name,audlt_flag,admin_wxid,robot_id
+    </sql>
+    <select id="select" parameterType="string" resultType="com.qsls9.catspringbootdemo.model.User">
+        select
+        <include refid="Base_Column_List"/>
+        from User
+        where robot_id = #{robot_wxid}
+    </select>
+    <select id="selectCountbywxid" parameterType="com.qsls9.catspringbootdemo.model.User" resultType="integer">
+        select count(1)
+        from User
+        where wxid = #{wxid}
+        and robot_id = #{robot_id}
+    </select>
+
+    <select id="selectByWxid" parameterType="com.qsls9.catspringbootdemo.model.User" resultType="com.qsls9.catspringbootdemo.model.User">
+        select *
+        from User
+        where wxid = #{wxid}
+        and robot_id = #{robot_id}
+    </select>
+
+    <select id="selectAdmin" parameterType="string"  resultType="com.qsls9.catspringbootdemo.model.User">
+        select *
+        from User
+        where admin_flag=1
+        and robot_id = #{robot_wxid}
+    </select>
+    <select id="selectById" parameterType="Integer" resultType="com.qsls9.catspringbootdemo.model.User">
+        select *
+        from User
+        where id = #{id}
+    </select>
+    <insert id="insert" parameterType="com.qsls9.catspringbootdemo.model.Group" >
+     insert into User(id,group_id,group_name,audlt_flag,robot_id)
+     values(null,#{group_id},#{group_name},#{audlt_flag},#{robot_id})
+    </insert>
+    <update id="updateByWxid" parameterType="com.qsls9.catspringbootdemo.model.User">
+        update user set wx_name=#{wx_name},audlt_flag=#{audlt_flag}
+        where wxid=#{wxid}
+    </update>
+
+</mapper>
