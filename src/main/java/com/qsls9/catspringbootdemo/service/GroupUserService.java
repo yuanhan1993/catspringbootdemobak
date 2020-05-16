@@ -7,4 +7,5 @@ public interface GroupUserService {
 
     GroupUser selectByGroupUser(GroupUser groupUser);
 
+
 }
