@@ -7,4 +7,6 @@ public interface GroupMapper {
     Integer insert(Group group);
 
     Group selectByGroup(Group group);
+
+    Integer updateByGroup(Group group);
 }
