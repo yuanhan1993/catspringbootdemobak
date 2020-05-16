@@ -2,8 +2,12 @@ package com.qsls9.catspringbootdemo.message;
 
 import com.alibaba.fastjson.JSONObject;
 import com.qsls9.catspringbootdemo.model.FriendRequest;
+import com.qsls9.catspringbootdemo.model.Group;
+import com.qsls9.catspringbootdemo.model.GroupUser;
 import com.qsls9.catspringbootdemo.model.User;
 import com.qsls9.catspringbootdemo.service.FriendRequestService;
+import com.qsls9.catspringbootdemo.service.GroupService;
+import com.qsls9.catspringbootdemo.service.GroupUserService;
 import com.qsls9.catspringbootdemo.service.UserService;
 import com.qsls9.catspringbootdemo.util.*;
 import org.json.JSONException;
@@ -27,7 +31,7 @@ public class M {
 
 
     //测试调用方法
-    public static  String send_demo(HttpServletRequest request, String type, UserService userService, FriendRequestService friendRequestService) throws IOException, JSONException {
+    public static  String send_demo(HttpServletRequest request, String type, UserService userService, FriendRequestService friendRequestService, GroupService groupService, GroupUserService groupUserService) throws IOException, JSONException {
         String return_info = null;
         String robot_wxid = request.getParameter("robot_wxid");
         String from_wxid = request.getParameter("final_from_wxid");
@@ -41,6 +45,8 @@ public class M {
             user1.setAudlt_flag(0);
             user1.setAdmin_flag(0);
             user1.setRobot_id(robot_wxid);
+            user1.setState(1);
+            user1.setChat_flag(0);
             if (userService.selectCountbywxid(user1) == 0) {
                 userService.insert(user1);
             }
@@ -69,7 +75,8 @@ public class M {
                    List<User> users = userService.select(robot_wxid);
                    for (User user : users){
                        stringBuilder.append("id为： "+user.getId()).append("\n昵称为：  "+user.getWx_name())
-                               .append("\n开车模式开关：  "+(user.getAudlt_flag()==1?"开启":"关闭")).append("\n").append("\n" );
+                               .append("\n开车模式开关：  "+(user.getAudlt_flag()==1?"开启":"关闭")).append("\n").append("状态： ")
+                       .append(user.getState()==1?"正常":"删除").append("\n");
                    }
                     return_info =send_text_msg(robot_wxid,from_wxid,stringBuilder.toString());
                 }else {
@@ -148,14 +155,18 @@ public class M {
                 }
             }
             else {
-                //调用图灵机器人接口
-                msg = postUtils.TLRobot(msg);
-                if ("请求次数超限制!".equals(msg)) {
-                    //调用青客云接口
-                    msg = newHttpUtils.getMessage(msg);
+                if(userService.selectByWxid(user1).getChat_flag()==0){
+                    return_info = send_text_msg(robot_wxid, from_wxid, "您未开启自由聊天模式，请发送功能关键字");
+                } else {
+                    //调用图灵机器人接口
+                    msg = postUtils.TLRobot(msg);
+                    if ("请求次数超限制!".equals(msg)) {
+                        //调用青客云接口
+                        msg = newHttpUtils.getMessage(msg);
+                    }
+                    return_info = send_text_msg(robot_wxid, from_wxid, msg);
                 }
-                return_info = send_text_msg(robot_wxid, from_wxid, msg);
-            }
+                }
         }
 
         //加好友请求
@@ -177,13 +188,33 @@ public class M {
         if("200".equals(type)){
             String group_id = request.getParameter("from_wxid");
             String group_name = request.getParameter("from_name");
+            Group group = new Group();
+            group.setGroup_id(group_id);
+            group.setGroup_name(group_name);
+            group.setAudlt_flag(0);
+            group.setRobot_id(robot_wxid);
+            if (groupService.selectByGroup(group)==null){
+                if (groupService.insert(group)==1){
+                    GroupUser groupUser = new GroupUser();
+                    groupUser.setGroupId(groupService.selectByGroup(group).getId());
+                    groupUser.setRobot_id(robot_wxid);
+                    groupUser.setWxid(from_wxid);
+                    groupUser.setWx_name(from_name);
+                    if (groupUserService.selectByGroupUser(groupUser)==null){
+                        groupUserService.insert(groupUser);
+                    }
+                }
 
-            msg = postUtils.TLRobot(msg);
-            if ("请求次数超限制!".equals(msg)) {
-                //调用青客云接口
-                msg = newHttpUtils.getMessage(msg);
+            }else {
+                if (groupService.selectByGroup(group).getChat_flag()==1){
+                    msg = postUtils.TLRobot(msg);
+                    if ("请求次数超限制!".equals(msg)) {
+                        //调用青客云接口
+                        msg = newHttpUtils.getMessage(msg);
+                    }
+                    return_info=send_group_at_msg(robot_wxid,group_id,from_wxid,from_name,msg);
+                }
             }
-            return_info=send_group_at_msg(robot_wxid,group_id,from_wxid,from_name,msg);
         }
 
             return  return_info;
