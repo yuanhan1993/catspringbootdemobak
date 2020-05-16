@@ -12,7 +12,7 @@
     </select>
     <insert id="insert" parameterType="com.qsls9.catspringbootdemo.model.GroupUser" >
      insert into groupuser(id,groupid,wxid,robot_id,wx_name)
-     values(null,#{groupid},#{wxid},#{robot_id},#{wx_name}})
+     values(null,#{groupid},#{wxid},#{robot_id},#{wx_name})
     </insert>
 
     <select id="selectByGroupUser" parameterType="com.qsls9.catspringbootdemo.model.GroupUser" resultType="com.qsls9.catspringbootdemo.model.GroupUser">
