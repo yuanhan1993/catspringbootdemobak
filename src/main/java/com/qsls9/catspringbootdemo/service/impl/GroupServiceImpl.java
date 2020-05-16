@@ -21,4 +21,9 @@ public class GroupServiceImpl implements GroupService {
     public Group selectByGroup(Group group) {
         return groupMapper.selectByGroup(group);
     }
+
+    @Override
+    public Integer updateByGroup(Group group) {
+        return groupMapper.updateByGroup(group);
+    }
 }
