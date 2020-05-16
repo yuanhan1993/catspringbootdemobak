@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.util.StringUtils;
 
+import javax.jws.soap.SOAPBinding;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -76,7 +77,7 @@ public class M {
                    for (User user : users){
                        stringBuilder.append("id为： "+user.getId()).append("\n昵称为：  "+user.getWx_name())
                                .append("\n开车模式开关：  "+(user.getAudlt_flag()==1?"开启":"关闭")).append("\n").append("状态： ")
-                       .append(user.getState()==1?"正常":"删除").append("\n");
+                       .append(user.getState()==1?"正常":"删除"+"\n").append("\n");
                    }
                     return_info =send_text_msg(robot_wxid,from_wxid,stringBuilder.toString());
                 }else {
@@ -97,6 +98,7 @@ public class M {
                                     for (int i=0;i<30;i++){
                                         return_info = send_image_msg(robot_wxid, u.getWxid(), getImgPost.getimg());
                                     }
+                                    return_info = send_text_msg(robot_wxid,from_wxid,"轰炸完成");
                                 }
                                     else {
                                     return_info = send_text_msg(robot_wxid,u.getWxid(),tmp[2]);
@@ -143,10 +145,8 @@ public class M {
                 if (userService.selectByWxid(user1).getAudlt_flag()==1){
                     return_info = send_text_msg(robot_wxid,from_wxid,"您已开启飙车模式，无需重复开启");
                 }else{
-                    User user = new User();
-                    user.setWxid(from_wxid);
-                    user.setWx_name(from_name);
-                    user.setAudlt_flag(1);
+                 User user = userService.selectByWxid(user1);
+                 user.setAudlt_flag(1);
                     if(userService.updateByWxid(user)==1){
                         return_info = send_text_msg(robot_wxid,from_wxid,"恭喜您！！！  开启成功   尽情飙车吧！！！！！！");
                     }else {
@@ -155,7 +155,9 @@ public class M {
                 }
             }
             else {
-                if(userService.selectByWxid(user1).getChat_flag()==0){
+                User user2 = userService.selectByWxid(user1);
+               Integer chat_flag = user2.getChat_flag();
+                if(chat_flag==0){
                     return_info = send_text_msg(robot_wxid, from_wxid, "您未开启自由聊天模式，请发送功能关键字");
                 } else {
                     //调用图灵机器人接口
@@ -193,20 +195,84 @@ public class M {
             group.setGroup_name(group_name);
             group.setAudlt_flag(0);
             group.setRobot_id(robot_wxid);
+            group.setChat_flag(0);
             if (groupService.selectByGroup(group)==null){
-                if (groupService.insert(group)==1){
-                    GroupUser groupUser = new GroupUser();
-                    groupUser.setGroupId(groupService.selectByGroup(group).getId());
-                    groupUser.setRobot_id(robot_wxid);
-                    groupUser.setWxid(from_wxid);
-                    groupUser.setWx_name(from_name);
-                    if (groupUserService.selectByGroupUser(groupUser)==null){
-                        groupUserService.insert(groupUser);
-                    }
+                    groupService.insert(group);
+
+            }
+            GroupUser groupUser = new GroupUser();
+            groupUser.setGroupid(groupService.selectByGroup(group).getId());
+            groupUser.setRobot_id(robot_wxid);
+            groupUser.setWxid(from_wxid);
+            groupUser.setWx_name(from_name);
+            if (groupUserService.selectByGroupUser(groupUser)==null){
+                groupUserService.insert(groupUser);
+            }
+            if ("设置主人微信".contains(msg)){
+                Group existsGroup = groupService.selectByGroup(group);
+                if(existsGroup.getAdmin_wxid()==null){
+                    existsGroup.setAdmin_wxid(from_wxid);
+                    groupService.updateByGroup(existsGroup);
+                    return_info = send_group_at_msg(robot_wxid,group_id,from_wxid,from_name,"设置主人微信成功！！！");
+                }else {
+                    return_info = send_group_at_msg(robot_wxid,group_id,from_wxid,from_name,"该群已设置过主人微信，若需重新设置请联系管理员");
                 }
 
-            }else {
-                if (groupService.selectByGroup(group).getChat_flag()==1){
+            }else if("开启聊天模式".equals(msg)){
+                Group existsGroup = groupService.selectByGroup(group);
+                if (existsGroup.getChat_flag()==0){
+                    existsGroup.setChat_flag(1);
+                    groupService.updateByGroup(existsGroup);
+                    return_info = send_group_at_msg(robot_wxid,group_id,from_wxid,from_name,"憋死我了，终于又可以骚聊了！！！");
+                }else {
+                    return_info = send_group_at_msg(robot_wxid,group_id,from_wxid,from_name,"聊天模式已经开启，无需重复开启");
+                }
+
+            }
+            else if("关闭聊天模式".equals(msg)){
+                Group existsGroup = groupService.selectByGroup(group);
+                if (existsGroup.getChat_flag()!=0){
+                    existsGroup.setChat_flag(0);
+                    groupService.updateByGroup(existsGroup);
+                    return_info = send_text_msg(robot_wxid,group_id,"miko从现在开始将不再说话！！！");
+                }
+            }else if(AUDLTFLAG.contains(msg)){
+                Group existsGroup = groupService.selectByGroup(group);
+                if(from_wxid.equals(existsGroup.getAdmin_wxid())){
+                    if (existsGroup.getAudlt_flag()==0){
+                        existsGroup.setAudlt_flag(1);
+                        groupService.updateByGroup(existsGroup);
+                        send_text_msg(robot_wxid,group_id,"系好安全带，车速有点快！！！");
+                    }else {
+                        send_text_msg(robot_wxid,group_id,"飙车模式已开启，无需重复开启");
+                    }
+                }else {
+                    send_group_at_msg(robot_wxid,group_id,from_wxid,from_name,"你不是我主人，休想命令我！！！");
+                }
+
+            }else if("关闭飙车模式".equals(msg)){
+                Group existsGroup = groupService.selectByGroup(group);
+                if (from_wxid.equals(existsGroup.getAdmin_wxid())){
+                    if (existsGroup.getAudlt_flag()==1){
+                        existsGroup.setAudlt_flag(0);
+                        groupService.updateByGroup(existsGroup);
+                        send_text_msg(robot_wxid,group_id,"车都不让开，真无趣！！！");
+                    }
+                }else {
+                    send_group_at_msg(robot_wxid,group_id,from_wxid,from_name,"你不是我主人，休想命令我！！！");
+                }
+            }
+
+                else if(AUDITMODE.contains(msg)){
+                Group existsGroup = groupService.selectByGroup(group);
+                if (existsGroup.getAudlt_flag()==1){
+                    send_image_msg(robot_wxid,group_id,getImgPost.getimg());
+                }else {
+                    send_text_msg(robot_wxid,group_id,"主人不让我开车，如果主人告诉我 “开启飙车模式 ” ，我可以考虑一下");
+                }
+
+            }
+            else if (groupService.selectByGroup(group).getChat_flag()==1){
                     msg = postUtils.TLRobot(msg);
                     if ("请求次数超限制!".equals(msg)) {
                         //调用青客云接口
@@ -214,7 +280,7 @@ public class M {
                     }
                     return_info=send_group_at_msg(robot_wxid,group_id,from_wxid,from_name,msg);
                 }
-            }
+
         }
 
             return  return_info;
