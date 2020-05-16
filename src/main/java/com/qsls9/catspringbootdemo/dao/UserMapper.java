@@ -18,6 +18,9 @@ public interface UserMapper {
 
     User selectAdmin(String robot_wxid);
 
-    User selectById(Integer id );
+    User selectById(Integer id);
+
+    Integer updateStateByRobotid(String robot_wxid);
+
 
 }
