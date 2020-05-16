@@ -5,8 +5,9 @@ public class Group {
     private String group_id;
     private String group_name;
     private String admin_wxid;
-    private String audlt_flag;
+    private Integer audlt_flag;
     private String robot_id;
+    private Integer chat_flag;
 
     public String getRobot_id() {
         return robot_id;
@@ -14,6 +15,14 @@ public class Group {
 
     public void setRobot_id(String robot_id) {
         this.robot_id = robot_id;
+    }
+
+    public Integer getChat_flag() {
+        return chat_flag;
+    }
+
+    public void setChat_flag(Integer chat_flag) {
+        this.chat_flag = chat_flag;
     }
 
     public Integer getId() {
@@ -48,11 +57,11 @@ public class Group {
         this.admin_wxid = admin_wxid;
     }
 
-    public String getAudlt_flag() {
+    public Integer getAudlt_flag() {
         return audlt_flag;
     }
 
-    public void setAudlt_flag(String audlt_flag) {
+    public void setAudlt_flag(Integer audlt_flag) {
         this.audlt_flag = audlt_flag;
     }
 }
