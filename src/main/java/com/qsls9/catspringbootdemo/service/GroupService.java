@@ -7,4 +7,6 @@ public interface GroupService {
 
     Group selectByGroup(Group group);
 
+    Integer updateByGroup(Group group);
+
 }
