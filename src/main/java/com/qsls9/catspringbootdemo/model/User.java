@@ -7,6 +7,24 @@ public class User {
     private Integer audlt_flag;
     private Integer admin_flag;
     private String robot_id;
+    private Integer state;
+    private Integer chat_flag;
+
+    public Integer getChat_flag() {
+        return chat_flag;
+    }
+
+    public void setChat_flag(Integer chat_flag) {
+        this.chat_flag = chat_flag;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
 
     public String getRobot_id() {
         return robot_id;
