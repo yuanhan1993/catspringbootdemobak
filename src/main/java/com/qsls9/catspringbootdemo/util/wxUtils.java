@@ -25,6 +25,7 @@ public class wxUtils {
                 user.setWxid(getImgPost.dealJson(jb.toString(),"wxid"));
                 user.setAdmin_flag(0);
                 user.setState(1);
+                user.setChat_flag(0);
                 Integer i = userService.selectCountbywxid(user);
                 if(i==0){
                     userService.insert(user);
@@ -32,7 +33,7 @@ public class wxUtils {
                 }else if (i>=1){
                 User existsUser = userService.selectByWxid(user);
                 existsUser.setState(1);
-                userService.insert(existsUser);
+                userService.updateByWxid(existsUser);
                 }
             }
         } catch (IOException e) {
