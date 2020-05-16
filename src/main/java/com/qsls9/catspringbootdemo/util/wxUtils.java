@@ -15,6 +15,7 @@ public class wxUtils {
     public static Integer updateUser(String robot_wxid, UserService userService)  {
         Integer count = 0;
         try {
+            userService.updateStateByRobotid(robot_wxid);
             JSONArray ja = JSONArray.parseArray(URLDecoder.decode(getImgPost.dealJson(M.get_friend_list(robot_wxid,"1"),"data")));
             for (Object jb : ja){
                 User user = new User();
@@ -23,9 +24,15 @@ public class wxUtils {
                 user.setWx_name(getImgPost.dealJson(jb.toString(),"nickname"));
                 user.setWxid(getImgPost.dealJson(jb.toString(),"wxid"));
                 user.setAdmin_flag(0);
-                if(userService.selectCountbywxid(user)==0){
+                user.setState(1);
+                Integer i = userService.selectCountbywxid(user);
+                if(i==0){
                     userService.insert(user);
                     count++;
+                }else if (i>=1){
+                User existsUser = userService.selectByWxid(user);
+                existsUser.setState(1);
+                userService.insert(existsUser);
                 }
             }
         } catch (IOException e) {
