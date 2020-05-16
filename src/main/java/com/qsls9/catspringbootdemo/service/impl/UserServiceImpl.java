@@ -50,4 +50,9 @@ public class UserServiceImpl implements UserService {
         return userMapper.selectById(id);
     }
 
+    @Override
+    public Integer updateStateByRobotid(String robot_wxid) {
+        return userMapper.updateStateByRobotid(robot_wxid);
+    }
+
 }
