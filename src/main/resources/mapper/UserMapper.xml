@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.qsls9.catspringbootdemo.dao.UserMapper">
     <sql id="Base_Column_List">
-        id, wxid,wx_name,audlt_flag,admin_flag,robot_id
+        id, wxid,wx_name,audlt_flag,admin_flag,robot_id,state,chat_flag
     </sql>
     <select id="select" parameterType="string" resultType="com.qsls9.catspringbootdemo.model.User">
         select
@@ -44,4 +44,8 @@
         where wxid=#{wxid}
     </update>
 
+    <update id="updateStateByRobotid" parameterType="string">
+        update user set state = 0
+        where robot_id=#{robot_wxid}
+    </update>
 </mapper>
