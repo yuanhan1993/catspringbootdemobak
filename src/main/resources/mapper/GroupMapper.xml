@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.qsls9.catspringbootdemo.dao.GroupMapper">
     <sql id="Base_Column_List">
-        id, group_id,group_name,audlt_flag,admin_wxid,robot_id
+        id, group_id,group_name,audlt_flag,admin_wxid,robot_id,chat_flag
     </sql>
-    <select id="select" parameterType="string" resultType="com.qsls9.catspringbootdemo.model.User">
+    <select id="select" parameterType="com.qsls9.catspringbootdemo.model.Group" resultType="com.qsls9.catspringbootdemo.model.User">
         select
         <include refid="Base_Column_List"/>
         from User
@@ -17,10 +17,10 @@
         and robot_id = #{robot_id}
     </select>
 
-    <select id="selectByWxid" parameterType="com.qsls9.catspringbootdemo.model.User" resultType="com.qsls9.catspringbootdemo.model.User">
+    <select id="selectByGroup" parameterType="com.qsls9.catspringbootdemo.model.Group" resultType="com.qsls9.catspringbootdemo.model.User">
         select *
-        from User
-        where wxid = #{wxid}
+        from group
+        where group_id = #{group_id}
         and robot_id = #{robot_id}
     </select>
 
