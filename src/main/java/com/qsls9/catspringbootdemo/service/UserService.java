@@ -19,6 +19,8 @@ public interface UserService {
 
         User selectById(Integer id);
 
+        Integer updateStateByRobotid(String robot_wxid);
+
 
 
 }
