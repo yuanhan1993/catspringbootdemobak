@@ -36,12 +36,13 @@
         where id = #{id}
     </select>
     <insert id="insert" parameterType="com.qsls9.catspringbootdemo.model.User" >
-     insert into User(id,wxid,wx_name,audlt_flag,admin_flag,robot_id)
-     values(null,#{wxid},#{wx_name},#{audlt_flag},#{admin_flag},#{robot_id})
+     insert into User(id,wxid,wx_name,audlt_flag,admin_flag,robot_id,state,chat_flag)
+     values(null,#{wxid},#{wx_name},#{audlt_flag},#{admin_flag},#{robot_id},#{state},#{chat_flag})
     </insert>
     <update id="updateByWxid" parameterType="com.qsls9.catspringbootdemo.model.User">
-        update user set wx_name=#{wx_name},audlt_flag=#{audlt_flag}
+        update user set wx_name=#{wx_name},audlt_flag=#{audlt_flag},chat_flag=#{chat_flag},state=#{state}
         where wxid=#{wxid}
+        and robot_id=#{robot_id}
     </update>
 
     <update id="updateStateByRobotid" parameterType="string">
