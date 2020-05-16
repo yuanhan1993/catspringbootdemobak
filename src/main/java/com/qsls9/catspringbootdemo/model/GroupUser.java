@@ -2,7 +2,7 @@ package com.qsls9.catspringbootdemo.model;
 
 public class GroupUser {
     private Integer id ;
-    private Integer groupId ;
+    private Integer groupid ;
     private String wxid;
     private String robot_id;
     private String wx_name;
@@ -15,12 +15,12 @@ public class GroupUser {
         this.id = id;
     }
 
-    public Integer getGroupId() {
-        return groupId;
+    public Integer getGroupid() {
+        return groupid;
     }
 
-    public void setGroupId(Integer groupId) {
-        this.groupId = groupId;
+    public void setGroupid(Integer groupid) {
+        this.groupid = groupid;
     }
 
     public String getWxid() {
