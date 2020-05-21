@@ -47,7 +47,7 @@ public class M {
                     return_info = send_text_msg(robot_wxid,from_wxid,"您没有开启飙车模式，请发送 “开启飙车模式 ” 开启飙车功能");  //暂时关闭飙车模式
 /*                    return_info = send_text_msg(robot_wxid, from_wxid, "飙车模式暂时关闭，需要开启权限请联系主人");*/
                 } else {
-                    return_info = send_image_msg(robot_wxid, from_wxid, getImgPost.getimg());
+                    return_info = send_image_msg(robot_wxid, from_wxid, getImgPost.getimg(0));
                 }
             } else if(msg.contains("更新好友列表")){
                 if (userService.selectByWxid(user1).getAdmin_flag()==1){
@@ -82,10 +82,10 @@ public class M {
                         if (u!=null){
                             if (tmp[2]!=null){
                                 if (tmp[2].contains("图片") || tmp[2].contains("美女")){
-                                    return_info = send_image_msg(robot_wxid, u.getWxid(), getImgPost.getimg());
+                                    return_info = send_image_msg(robot_wxid, u.getWxid(), getImgPost.getimg(0));
                                 }else if(tmp[2].contains("轰炸") || tmp[2].contains("十连发")){
                                     for (int i=0;i<30;i++){
-                                        return_info = send_image_msg(robot_wxid, u.getWxid(), getImgPost.getimg());
+                                        return_info = send_image_msg(robot_wxid, u.getWxid(), getImgPost.getimg(0));
                                     }
                                     return_info = send_text_msg(robot_wxid,from_wxid,"轰炸完成");
                                 }
@@ -129,19 +129,40 @@ public class M {
                 }
 
             }
+            else if ("资源列表".equals(msg)){
+                if (userService.selectByWxid(user1).getAudlt_flag()!=0) {
+                    List<ResourceList> resourceLists =  resourceListService.select();
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (ResourceList resourceList : resourceLists){
+                        stringBuilder.append("编号：").append(resourceList.getId()).append("\n").append(resourceList.getTitle()).append("\n");
+                    }
+                    stringBuilder.append("\n输入资源加编号可查看详情");
+                    return_info = send_text_msg(robot_wxid,from_wxid,stringBuilder.toString());
+                }else {
+                    return_info = send_text_msg(robot_wxid,from_wxid,"您没有权限，请找我主人开启资源查询权限");
+
+                }
+
+                }
             //获取资源关键字
             else if (msg.contains("资源")){
                 if (userService.selectByWxid(user1).getAudlt_flag()!=0){
                     String[] tmp = msg.split("：");
-                    if (resourceListService.selectCountById(Integer.valueOf(tmp[2]))>0){
-                        ResourceList resourceList = resourceListService.selectById(Integer.valueOf(tmp[2]));
-                        if (!StringUtils.isEmpty(resourceList.getImgurl())){
-                            return_info = send_image_msg(robot_wxid,from_wxid,resourceList.getImgurl());
+                    if (tmp.length>=2){
+                        if (resourceListService.selectCountById(Integer.valueOf(tmp[1]))>0){
+                            ResourceList resourceList = resourceListService.selectById(Integer.valueOf(tmp[1]));
+                            if (!StringUtils.isEmpty(resourceList.getImgurl())){
+                                return_info = send_image_msg(robot_wxid,from_wxid,resourceList.getImgurl());
+                            }
+                            return_info = send_text_msg(robot_wxid,from_wxid,new StringBuilder().append("下载地址：").append(resourceList.getLink()).append("\n提取码：").append(resourceList.getExtractedcode()).append("\n解压密码：").append(resourceList.getPassword()).toString());
+                        }else {
+                            return_info = send_text_msg(robot_wxid,from_wxid,"该资源不存在，请确认编号是否正确");
                         }
-                        return_info = send_text_msg(robot_wxid,from_wxid,new StringBuilder().append("下载地址：").append(resourceList.getLink()).append("\n解压密码：").append(resourceList.getPassword()).toString());
                     }else {
-                        return_info = send_text_msg(robot_wxid,from_wxid,"该资源不存在，请确认编号是否正确");
+                        return_info = send_text_msg(robot_wxid,from_wxid,"请输入正确的格式，例如：“ 资源：1 ”");
+
                     }
+
                 }else {
                     return_info = send_text_msg(robot_wxid,from_wxid,"您没有权限，请找我主人开启资源查询权限");
                 }
@@ -273,7 +294,7 @@ public class M {
                 else if(AUDITMODE.contains(msg)){
                 Group existsGroup = groupService.selectByGroup(group);
                 if (existsGroup.getAudlt_flag()==1){
-                    send_image_msg(robot_wxid,group_id,getImgPost.getimg());
+                    send_image_msg(robot_wxid,group_id,getImgPost.getimg(0));
                 }else {
                     send_text_msg(robot_wxid,group_id,"主人不让我开车，如果主人告诉我 “开启飙车模式 ” ，我可以考虑一下");
                 }
