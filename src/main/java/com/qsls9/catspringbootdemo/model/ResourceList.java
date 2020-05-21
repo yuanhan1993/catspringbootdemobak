@@ -9,6 +9,15 @@ public class ResourceList {
     private String restype;
     private String createdate;
     private Integer encryptflag;
+    private String extractedcode;
+
+    public String getExtractedcode() {
+        return extractedcode;
+    }
+
+    public void setExtractedcode(String extractedcode) {
+        this.extractedcode = extractedcode;
+    }
 
     public Integer getEncryptflag() {
         return encryptflag;
