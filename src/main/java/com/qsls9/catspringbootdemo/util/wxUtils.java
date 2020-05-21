@@ -2,12 +2,15 @@ package com.qsls9.catspringbootdemo.util;
 
 import com.alibaba.fastjson.JSONArray;
 import com.qsls9.catspringbootdemo.message.M;
+import com.qsls9.catspringbootdemo.model.ResourceList;
 import com.qsls9.catspringbootdemo.model.User;
+import com.qsls9.catspringbootdemo.service.ResourceListService;
 import com.qsls9.catspringbootdemo.service.UserService;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.List;
 
 public class wxUtils {
 
@@ -38,6 +41,24 @@ public class wxUtils {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        return count;
+    }
+
+//加密存量资源表中的解压密码
+    public static Integer encryptPassword(ResourceListService resourceListService){
+        Integer count = 0;
+        List<ResourceList> resourceLists =  resourceListService.select();
+        for (ResourceList resourceList : resourceLists){
+            try {
+                if (resourceList.getEncryptflag()==0){
+                    resourceList.setPassword(AesCode.encrypt(resourceList.getPassword()));
+                    resourceListService.updatePassword(resourceList);
+                    count++;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return count;
     }
