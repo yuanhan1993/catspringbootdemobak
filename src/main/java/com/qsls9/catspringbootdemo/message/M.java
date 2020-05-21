@@ -1,22 +1,11 @@
 package com.qsls9.catspringbootdemo.message;
 
 import com.alibaba.fastjson.JSONObject;
-import com.qsls9.catspringbootdemo.model.FriendRequest;
-import com.qsls9.catspringbootdemo.model.Group;
-import com.qsls9.catspringbootdemo.model.GroupUser;
-import com.qsls9.catspringbootdemo.model.User;
-import com.qsls9.catspringbootdemo.service.FriendRequestService;
-import com.qsls9.catspringbootdemo.service.GroupService;
-import com.qsls9.catspringbootdemo.service.GroupUserService;
-import com.qsls9.catspringbootdemo.service.UserService;
+import com.qsls9.catspringbootdemo.model.*;
+import com.qsls9.catspringbootdemo.service.*;
 import com.qsls9.catspringbootdemo.util.*;
 import org.json.JSONException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.util.StringUtils;
-
-import javax.jws.soap.SOAPBinding;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -32,7 +21,7 @@ public class M {
 
 
     //测试调用方法
-    public static  String send_demo(HttpServletRequest request, String type, UserService userService, FriendRequestService friendRequestService, GroupService groupService, GroupUserService groupUserService) throws IOException, JSONException {
+    public static  String send_demo(HttpServletRequest request, String type, UserService userService, FriendRequestService friendRequestService, GroupService groupService, GroupUserService groupUserService, ResourceListService resourceListService) throws IOException, JSONException {
         String return_info = null;
         String robot_wxid = request.getParameter("robot_wxid");
         String from_wxid = request.getParameter("final_from_wxid");
@@ -137,6 +126,24 @@ public class M {
                 } else {
                     return_info = send_text_msg(robot_wxid, from_wxid, "您没有权限进行同意好友操作");
 
+                }
+
+            }
+            //获取资源关键字
+            else if (msg.contains("资源")){
+                if (userService.selectByWxid(user1).getAudlt_flag()!=0){
+                    String[] tmp = msg.split("：");
+                    if (resourceListService.selectCountById(Integer.valueOf(tmp[2]))>0){
+                        ResourceList resourceList = resourceListService.selectById(Integer.valueOf(tmp[2]));
+                        if (!StringUtils.isEmpty(resourceList.getImgurl())){
+                            return_info = send_image_msg(robot_wxid,from_wxid,resourceList.getImgurl());
+                        }
+                        return_info = send_text_msg(robot_wxid,from_wxid,new StringBuilder().append("下载地址：").append(resourceList.getLink()).append("\n解压密码：").append(resourceList.getPassword()).toString());
+                    }else {
+                        return_info = send_text_msg(robot_wxid,from_wxid,"该资源不存在，请确认编号是否正确");
+                    }
+                }else {
+                    return_info = send_text_msg(robot_wxid,from_wxid,"您没有权限，请找我主人开启资源查询权限");
                 }
 
             }
