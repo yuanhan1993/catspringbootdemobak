@@ -22,8 +22,8 @@ public class getImgPost {
     public static final String APPKEY = "6d92c52a70ef1bffc40b9d72dd3ed86b7001b4cae655100ded764ed4478d9109";
 
 
-    private static String getHTML(String url) {
-        url = url+"?appkey="+APPKEY;
+    private static String getHTML(String url,Integer type) {
+        url = url+"?appkey="+APPKEY+"&type="+type;
         StringBuffer buffer = new StringBuffer();
         BufferedReader bufferedReader = null;
         try {
@@ -61,8 +61,8 @@ public class getImgPost {
         }
     }
 
-    public static String getimg(){
-        return dealJson(dealJson(getHTML(URL),"data"),"Imgurl");
+    public static String getimg(Integer type){
+        return dealJson(dealJson(getHTML(URL,type),"data"),"Imgurl");
     }
 
 
