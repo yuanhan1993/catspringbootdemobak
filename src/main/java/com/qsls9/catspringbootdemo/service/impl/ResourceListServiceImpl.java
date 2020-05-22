@@ -13,9 +13,11 @@ public class ResourceListServiceImpl implements ResourceListService {
 
     @Autowired
     private ResourceListMapper resourceListMapper;
+
+
     @Override
-    public List<ResourceList> select() {
-        return resourceListMapper.select();
+    public List<ResourceList> selectByType(String restype) {
+        return resourceListMapper.selectByType(restype);
     }
 
     @Override
