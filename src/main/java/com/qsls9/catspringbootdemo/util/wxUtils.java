@@ -48,7 +48,7 @@ public class wxUtils {
 //加密存量资源表中的解压密码
     public static Integer encryptPassword(ResourceListService resourceListService){
         Integer count = 0;
-        List<ResourceList> resourceLists =  resourceListService.select();
+        List<ResourceList> resourceLists =  resourceListService.selectByType("0");
         for (ResourceList resourceList : resourceLists){
             try {
                 if (resourceList.getEncryptflag()==0){
