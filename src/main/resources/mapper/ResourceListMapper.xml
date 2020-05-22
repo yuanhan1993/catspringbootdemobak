@@ -4,10 +4,11 @@
     <sql id="Base_Column_List">
         id, title,link,password,imgurl,restype,createdate,encryptflag,extractedcode
     </sql>
-    <select id="select"  resultType="com.qsls9.catspringbootdemo.model.ResourceList">
+    <select id="selectByType" parameterType="string"  resultType="com.qsls9.catspringbootdemo.model.ResourceList">
         select
         <include refid="Base_Column_List"/>
         from resourcelist
+        where restype=#{restype}
     </select>
 
     <select id="selectById" parameterType="Integer" resultType="com.qsls9.catspringbootdemo.model.ResourceList">
