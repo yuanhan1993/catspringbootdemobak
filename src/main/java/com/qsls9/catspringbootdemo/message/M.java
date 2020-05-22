@@ -16,7 +16,7 @@ import java.util.List;
 
 public class M {
     private static String url = "http://192.168.0.103:8073/send";
-    private static String AUDITMODE = "看美女，图片，开车，飙车 ";
+    private static String AUDITMODE = "看美女，图片，开车，飙车模式 ";
     private static String AUDLTFLAG = "  开启飙车模式  ,  开启隐藏模式  ";
 
 
@@ -131,7 +131,7 @@ public class M {
             }
             else if ("资源列表".equals(msg)){
                 if (userService.selectByWxid(user1).getAudlt_flag()!=0) {
-                    List<ResourceList> resourceLists =  resourceListService.select();
+                    List<ResourceList> resourceLists =  resourceListService.selectByType("1");
                     StringBuilder stringBuilder = new StringBuilder();
                     for (ResourceList resourceList : resourceLists){
                         stringBuilder.append("编号：").append(resourceList.getId()).append("\n").append(resourceList.getTitle()).append("\n");
@@ -139,7 +139,7 @@ public class M {
                     stringBuilder.append("\n输入资源加编号可查看详情");
                     return_info = send_text_msg(robot_wxid,from_wxid,stringBuilder.toString());
                 }else {
-                    return_info = send_text_msg(robot_wxid,from_wxid,"您没有权限，请找我主人开启资源查询权限");
+                    return_info = send_text_msg(robot_wxid,from_wxid,"请先开启飙车模式，再尝试获取资源列表");
 
                 }
 
