@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.qsls9.catspringbootdemo.dao.UserMapper">
     <sql id="Base_Column_List">
-        id, wxid,wx_name,audlt_flag,admin_flag,robot_id,state,chat_flag
+        id, wxid,wx_name,audlt_flag,admin_flag,robot_id,state,chat_flag,pay_flag
     </sql>
     <select id="select" parameterType="string" resultType="com.qsls9.catspringbootdemo.model.User">
         select
@@ -40,7 +40,7 @@
      values(null,#{wxid},#{wx_name},#{audlt_flag},#{admin_flag},#{robot_id},#{state},#{chat_flag})
     </insert>
     <update id="updateByWxid" parameterType="com.qsls9.catspringbootdemo.model.User">
-        update user set wx_name=#{wx_name},audlt_flag=#{audlt_flag},chat_flag=#{chat_flag},state=#{state}
+        update user set wx_name=#{wx_name},audlt_flag=#{audlt_flag},chat_flag=#{chat_flag},state=#{state},pay_flag=#{pay_flag}
         where wxid=#{wxid}
         and robot_id=#{robot_id}
     </update>
