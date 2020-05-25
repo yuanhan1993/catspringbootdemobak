@@ -5,6 +5,7 @@ import com.qsls9.catspringbootdemo.model.*;
 import com.qsls9.catspringbootdemo.service.*;
 import com.qsls9.catspringbootdemo.util.*;
 import org.json.JSONException;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -128,13 +129,36 @@ public class M {
 
                 }
 
+            }else if (msg.contains("授权")){
+                String[] tmp = msg.split("：");
+                if (userService.selectByWxid(user1).getAdmin_flag() == 1){
+                    if (tmp.length>1){
+                        User user = userService.selectById(Integer.valueOf(tmp[1]));
+                        if (!ObjectUtils.isEmpty(user)){
+                            user.setPay_flag(1);
+                            if (userService.updateByWxid(user)==1){
+                                return_info=send_text_msg(robot_wxid,from_wxid,"已成功给 "+user.getWx_name()+" 授权");
+                            }else {
+                                return_info=send_text_msg(robot_wxid,from_wxid,"授权失败，请查看日志");
+                            }
+                        }else {
+                            return_info=send_text_msg(robot_wxid,from_wxid,"该用户不存在");
+                        }
+                    }else {
+                        return_info=send_text_msg(robot_wxid,from_wxid,"请输入正确的格式，例如 ‘ 授权：1 ’");
+                    }
+                }else {
+                    return_info = send_text_msg(robot_wxid, from_wxid, "您没有权限进行授权操作");
+                }
+
             }
+
             else if ("资源列表".equals(msg)){
                 if (userService.selectByWxid(user1).getAudlt_flag()!=0) {
                     List<ResourceList> resourceLists =  resourceListService.selectByType("1");
                     StringBuilder stringBuilder = new StringBuilder();
                     for (ResourceList resourceList : resourceLists){
-                        stringBuilder.append("编号：").append(resourceList.getId()).append("\n").append(resourceList.getTitle()).append("\n");
+                        stringBuilder.append("编号：").append(resourceList.getId()).append("\n").append(resourceList.getTitle()).append("\n----------------\n");
                     }
                     stringBuilder.append("\n输入资源加编号可查看详情");
                     return_info = send_text_msg(robot_wxid,from_wxid,stringBuilder.toString());
@@ -151,10 +175,23 @@ public class M {
                     if (tmp.length>=2){
                         if (resourceListService.selectCountById(Integer.valueOf(tmp[1]))>0){
                             ResourceList resourceList = resourceListService.selectById(Integer.valueOf(tmp[1]));
-                            if (!StringUtils.isEmpty(resourceList.getImgurl())){
-                                return_info = send_image_msg(robot_wxid,from_wxid,resourceList.getImgurl());
+                            if (resourceList.getRestype().contains("1")){
+                                if (!StringUtils.isEmpty(resourceList.getImgurl())){
+                                    return_info = send_image_msg(robot_wxid,from_wxid,resourceList.getImgurl());
+                                }
+                                return_info = send_text_msg(robot_wxid,from_wxid,new StringBuilder().append("下载地址：").append(resourceList.getLink()).append("\n提取码：").append(resourceList.getExtractedcode()).append("\n解压密码：").append(resourceList.getPassword()).toString());
+                            }else {
+                                if(userService.selectByWxid(user1).getPay_flag()==1){
+                                    if (!StringUtils.isEmpty(resourceList.getImgurl())){
+                                        return_info = send_image_msg(robot_wxid,from_wxid,resourceList.getImgurl());
+                                    }
+                                    return_info = send_text_msg(robot_wxid,from_wxid,new StringBuilder().append("下载地址：").append(resourceList.getLink()).append("\n提取码：").append(resourceList.getExtractedcode()).append("\n解压密码：").append(resourceList.getPassword()).toString());
+                                }else {
+                                    return_info = send_text_msg(robot_wxid,from_wxid,"您没有权限查看此资源，请联系管理员！！！");
+                                }
                             }
-                            return_info = send_text_msg(robot_wxid,from_wxid,new StringBuilder().append("下载地址：").append(resourceList.getLink()).append("\n提取码：").append(resourceList.getExtractedcode()).append("\n解压密码：").append(resourceList.getPassword()).toString());
+
+
                         }else {
                             return_info = send_text_msg(robot_wxid,from_wxid,"该资源不存在，请确认编号是否正确");
                         }
