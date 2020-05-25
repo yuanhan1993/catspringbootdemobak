@@ -9,6 +9,15 @@ public class User {
     private String robot_id;
     private Integer state;
     private Integer chat_flag;
+    private Integer pay_flag;
+
+    public Integer getPay_flag() {
+        return pay_flag;
+    }
+
+    public void setPay_flag(Integer pay_flag) {
+        this.pay_flag = pay_flag;
+    }
 
     public Integer getChat_flag() {
         return chat_flag;
