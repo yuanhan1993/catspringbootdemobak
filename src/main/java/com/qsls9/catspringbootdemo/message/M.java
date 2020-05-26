@@ -129,7 +129,26 @@ public class M {
 
                 }
 
-            }else if (msg.contains("授权")){
+            }
+            else if(msg.contains("删除好友")) {
+                String[] tmp = msg.split("：");
+                if (userService.selectByWxid(user1).getAdmin_flag() == 1) {
+                    if (tmp.length>1){
+                        User user = userService.selectById(Integer.valueOf(tmp[1]));
+                        if (!ObjectUtils.isEmpty(user)){
+                            return_info=delete_friend(robot_wxid,user.getWxid());
+                            send_text_msg(robot_wxid,from_wxid,"已删除好友 "+user.getWx_name());
+                        }else {
+                            return_info=send_image_msg(robot_wxid,from_wxid,"该用户不存在");
+                        }
+                    }else {
+                  return_info=send_text_msg(robot_wxid,from_wxid,"请输入正确的格式，例如 ‘ 删除好友：1 ’");
+                    }
+                    } else {
+                    send_text_msg(robot_wxid,from_wxid,"您没有权限进行该操作");
+                }
+            }
+            else if (msg.contains("授权")){
                 String[] tmp = msg.split("：");
                 if (userService.selectByWxid(user1).getAdmin_flag() == 1){
                     if (tmp.length>1){
@@ -166,7 +185,6 @@ public class M {
                     return_info = send_text_msg(robot_wxid,from_wxid,"请先开启飙车模式，再尝试获取资源列表");
 
                 }
-
                 }
             //获取资源关键字
             else if (msg.contains("资源")){
@@ -190,8 +208,6 @@ public class M {
                                     return_info = send_text_msg(robot_wxid,from_wxid,"您没有权限查看此资源，请联系管理员！！！");
                                 }
                             }
-
-
                         }else {
                             return_info = send_text_msg(robot_wxid,from_wxid,"该资源不存在，请确认编号是否正确");
                         }
@@ -204,6 +220,12 @@ public class M {
                     return_info = send_text_msg(robot_wxid,from_wxid,"您没有权限，请找我主人开启资源查询权限");
                 }
 
+            }else if (msg.contains("电报")){
+                if (userService.selectByWxid(user1).getAudlt_flag()==1){
+                    return_info = send_text_msg(robot_wxid,from_wxid,"");
+                }else {
+                    return_info = send_text_msg(robot_wxid,from_wxid,"请先发送开启飙车模式，开启改功能");
+                }
             }
             //暂时关闭飙车模式
             else if(AUDLTFLAG.contains(msg)){
@@ -751,7 +773,7 @@ public class M {
      *
      * @return string json_string
      */
-    public String delete_friend(String robot_wxid, String friend_wxid) throws IOException {
+    public static String delete_friend(String robot_wxid, String friend_wxid) throws IOException {
         // 封装返回数据结构
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("type", "305");// Api数值（可以参考 - api列表demo）
