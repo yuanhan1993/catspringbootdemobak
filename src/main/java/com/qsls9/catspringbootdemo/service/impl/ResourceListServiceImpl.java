@@ -35,4 +35,9 @@ public class ResourceListServiceImpl implements ResourceListService {
         return resourceListMapper.selectCountById(id);
     }
 
+    @Override
+    public List<ResourceList> selectall() {
+        return resourceListMapper.selectall();
+    }
+
 }
