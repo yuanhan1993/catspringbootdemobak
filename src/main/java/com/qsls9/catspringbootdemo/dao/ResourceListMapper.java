@@ -12,4 +12,6 @@ public interface ResourceListMapper {
     Integer updatePassword(ResourceList resourceList);
 
     Integer selectCountById(Integer id );
+
+    List<ResourceList> selectall();
 }
