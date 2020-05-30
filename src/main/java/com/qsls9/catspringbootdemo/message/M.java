@@ -67,7 +67,7 @@ public class M {
                    for (User user : users){
                        stringBuilder.append("id为： "+user.getId()).append("\n昵称为：  "+user.getWx_name())
                                .append("\n开车模式开关：  "+(user.getAudlt_flag()==1?"开启":"关闭")).append("\n").append("状态： ")
-                       .append(user.getState()==1?"正常":"删除"+"\n").append("\n");
+                       .append(user.getState()==1?"正常":"删除"+"\n").append("\n--------------------\n");
                    }
                     return_info =send_text_msg(robot_wxid,from_wxid,stringBuilder.toString());
                 }else {
@@ -174,7 +174,13 @@ public class M {
 
             else if ("资源列表".equals(msg)){
                 if (userService.selectByWxid(user1).getAudlt_flag()!=0) {
-                    List<ResourceList> resourceLists =  resourceListService.selectByType("1");
+                    List<ResourceList> resourceLists = null;
+                    if (userService.selectByWxid(user1).getPay_flag()==1){
+                       resourceLists =  resourceListService.selectall();
+                    }else {
+                        resourceLists =  resourceListService.selectByType("1");
+                    }
+
                     StringBuilder stringBuilder = new StringBuilder();
                     for (ResourceList resourceList : resourceLists){
                         stringBuilder.append("编号：").append(resourceList.getId()).append("\n").append(resourceList.getTitle()).append("\n----------------\n");
