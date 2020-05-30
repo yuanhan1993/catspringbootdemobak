@@ -228,7 +228,7 @@ public class M {
 
             }else if (msg.contains("电报")){
                 if (userService.selectByWxid(user1).getAudlt_flag()==1){
-                    return_info = send_text_msg(robot_wxid,from_wxid,"");
+                    return_info = send_text_msg(robot_wxid,from_wxid,"https://t.me/joinchat/AAAAAESgQil9IRcEaAqm8g");
                 }else {
                     return_info = send_text_msg(robot_wxid,from_wxid,"请先发送开启飙车模式，开启改功能");
                 }
