@@ -13,5 +13,6 @@ public interface ResourceListService {
 
     Integer selectCountById(Integer id );
 
+    List<ResourceList> selectall();
 
 }
