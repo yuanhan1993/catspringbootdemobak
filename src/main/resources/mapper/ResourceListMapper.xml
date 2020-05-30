@@ -11,6 +11,12 @@
         where restype=#{restype}
     </select>
 
+    <select id="selectall"  resultType="com.qsls9.catspringbootdemo.model.ResourceList">
+        select
+        <include refid="Base_Column_List"/>
+        from resourcelist
+    </select>
+
     <select id="selectById" parameterType="Integer" resultType="com.qsls9.catspringbootdemo.model.ResourceList">
         select
         <include refid="Base_Column_List"/>
